@@ -5,8 +5,8 @@ public class Test : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
-  }
+        GameObject j = new GameObject();
+    }
 
 	// Update is called once per frame
 	void Update () {
