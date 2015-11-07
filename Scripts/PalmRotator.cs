@@ -43,6 +43,7 @@ public class PalmRotator : MonoBehaviour {
 		if(hand != null && other.transform.root.GetComponent<RigidHand>() == hand){
 			grabSide.RemoveCubes();
 			hand = null;
+			canRotate = true;
 		}
 	}
 }
