@@ -6,7 +6,10 @@ public class SwipeCube : MonoBehaviour {
 
     public Controller hc;
     private float time = 0;
+    private float wait = 0;
     private Vector3 dir = Vector3.zero;
+    private SwipeGesture lr = null;
+    private SwipeGesture ud = null;
     private SwipeGesture sg = null;
 		private float[] coords;
 		private float max_dir;
@@ -18,68 +21,97 @@ public class SwipeCube : MonoBehaviour {
     {
         hc = new Controller();
         hc.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
+        hc.Config.SetFloat("Gesture.Swipe.MinLength", 150.0f);
+        hc.Config.SetFloat("Gesture.Swipe.MinVelocity", 300f);
+        hc.Config.Save();
         cur = hc.Frame();
     }
 
     // Update is called once per frame
-    void Update () {
-        if (hc.IsConnected && sg == null)
+    void Update ()
+    {
+      if (hc.IsConnected && lr == null && ud == null && wait == 0)
+      {
+        //Debug.Log("Checking for swipes.");
+        last = cur;
+        cur = hc.Frame();
+        long dif = cur.Id - last.Id;
+        while (dif > 0)
         {
-            last = cur;
-            cur = hc.Frame();
-            long dif = cur.Id - last.Id;
-            while (dif > 0)
+          Frame frame = hc.Frame((int)dif);
+          GestureList gests = frame.Gestures();
+          for (int i = 0; i < gests.Count; i++)
+          {
+            if (gests[i].Type == Gesture.GestureType.TYPE_SWIPE)
             {
-              Frame frame = hc.Frame((int)dif);
-              GestureList gests = frame.Gestures();
-              for (int i = 0; i < gests.Count; i++)
+              time = 0;
+              sg = new SwipeGesture(gests[i]);
+              dir = UnityVectorExtension.ToUnity(sg.Direction);
+              coords = new float[] { Mathf.Abs(dir.x),
+                                     Mathf.Abs(dir.y),
+                                     Mathf.Abs(dir.z) };
+              max_dir = Mathf.Max(coords);
+              if (max_dir == coords[0])
               {
-                if (gests[i].Type == Gesture.GestureType.TYPE_SWIPE)
-                {
-                  time = 0;
-                  sg = new SwipeGesture(gests[i]);
-                  dir = UnityVectorExtension.ToUnity(sg.Direction);
-                  coords = new float[] { Mathf.Abs(dir.x),
-                                         Mathf.Abs(dir.y),
-                                         Mathf.Abs(dir.z) };
-                  max_dir = Mathf.Max(coords);
-                  break;
-                }
+                lr = sg;
               }
-              dif--;
+              else if (max_dir == coords[1])
+              {
+                ud = sg;
+              }
+              break;
             }
+          }
+          if (lr != null || ud != null) break;
+          dif--;
+        }
+          wait = 3;
         }
 
-				if (sg != null && time < 90) {
-					if (max_dir == coords[0]) {
-						if (dir.x > 0) {
-            	this.transform.eulerAngles = new Vector3(
-													this.transform.eulerAngles.x,
-													this.transform.eulerAngles.y - 5,
-													this.transform.eulerAngles.z);
-            } else {
-              this.transform.eulerAngles = new Vector3(
-													this.transform.eulerAngles.x,
-													this.transform.eulerAngles.y + 5,
-													this.transform.eulerAngles.z);
-						}
-					} else if (max_dir == coords[1]) {
-            if (dir.y > 0) {
-            	this.transform.eulerAngles = new Vector3(
-													this.transform.eulerAngles.x + 5,
-													this.transform.eulerAngles.y,
-													this.transform.eulerAngles.z);
-            } else {
-              this.transform.eulerAngles = new Vector3(
-													this.transform.eulerAngles.x - 5,
-													this.transform.eulerAngles.y,
-													this.transform.eulerAngles.z);
-						}
-            time += 5;
+			if (time < 90 && wait > 0)
+      {
+        //Debug.Log("Choosing what direction.");
+        if (lr != null && ud == null)
+        {
+					if (dir.x > 0)
+          {
+            this.transform.RotateAround(
+            this.transform.position, Vector3.up, -5);
+          }
+          else
+          {
+            this.transform.RotateAround(
+            this.transform.position, Vector3.up, 5);
+					}
+			  }
+        else if (lr == null && ud != null)
+        {
+          if (dir.y > 0)
+          {
+            this.transform.RotateAround(
+            this.transform.position, Vector3.right, 5);
+          }
+          else
+          {
+            this.transform.RotateAround(
+            this.transform.position, Vector3.right, -5);
+          }
         }
-				if (time == 90) {
-            sg = null;
-        }
+        time += 5;
       }
+			else if (time == 90)
+      {
+        //Debug.Log("Finished swipe.");
+        if (lr != null && ud == null)
+        {
+          lr = null;
+        }
+        else if (lr == null && ud != null)
+        {
+          ud = null;
+        }
+        wait--;
+      }
+    }
 
 }
