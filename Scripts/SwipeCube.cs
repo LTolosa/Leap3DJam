@@ -5,6 +5,7 @@ using Leap;
 public class SwipeCube : MonoBehaviour {
 
     public Controller hc;
+    public static bool checkSwipe = true;
     private float time = 0;
     private float wait = 0;
     private Vector3 dir = Vector3.zero;
@@ -30,7 +31,7 @@ public class SwipeCube : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-      if (hc.IsConnected && lr == null && ud == null && wait == 0)
+      if (hc.IsConnected && lr == null && ud == null && wait == 0 && checkSwipe)
       {
         //Debug.Log("Checking for swipes.");
         last = cur;
