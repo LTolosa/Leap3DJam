@@ -38,6 +38,7 @@ public class GrabDetector : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
         // Check if object is in the List
 				if(!CubeLists.Contains(other.gameObject) && other.tag == "Cube"){
+            //Debug.Log("Added " + other.gameObject.name);
             CubeLists.Add(other.gameObject);
 				}
   }

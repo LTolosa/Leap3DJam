@@ -29,7 +29,7 @@ public class PalmRotator : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other){
-		Debug.Log(other.transform.root.name);
+		//Debug.Log(other.transform.root.name);
 		if(other.transform.root.name == HAND_NAME && hand == null){
 			hand = other.transform.root.GetComponent<RigidHand>();
 			startAngle = hand.GetPalmRotation().eulerAngles;

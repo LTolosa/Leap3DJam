@@ -65,7 +65,7 @@ public class SwipeCube : MonoBehaviour {
           if (lr != null || ud != null) break;
           dif--;
         }
-          wait = 3;
+          wait = 15;
         }
 
 			if (time < 90 && wait > 0)
@@ -76,12 +76,12 @@ public class SwipeCube : MonoBehaviour {
 					if (dir.x > 0)
           {
             this.transform.RotateAround(
-            this.transform.position, Vector3.up, -5);
+            this.transform.position, Vector3.up, -10);
           }
           else
           {
             this.transform.RotateAround(
-            this.transform.position, Vector3.up, 5);
+            this.transform.position, Vector3.up, 10);
 					}
 			  }
         else if (lr == null && ud != null)
@@ -89,15 +89,15 @@ public class SwipeCube : MonoBehaviour {
           if (dir.y > 0)
           {
             this.transform.RotateAround(
-            this.transform.position, Vector3.right, 5);
+            this.transform.position, Vector3.right, 10);
           }
           else
           {
             this.transform.RotateAround(
-            this.transform.position, Vector3.right, -5);
+            this.transform.position, Vector3.right, -10);
           }
         }
-        time += 5;
+        time += 10;
       }
 			else if (time == 90)
       {
