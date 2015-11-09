@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LMWidgets;
 
-public class SliderDemo : SliderBase 
+public class SliderDemo : SliderBase
 {
   // ASSUME: Active Bar is a transform-sibling of SliderDemo
   public GameObject activeBar = null;
@@ -13,12 +13,12 @@ public class SliderDemo : SliderBase
   public SliderDemoGraphics botLayer = null;
   public GameObject dot = null;
   public int numberOfDots = 0;
-  
+
   public Color BotLayerPressedColor = new Color(0.0f, 1.0f, 1.0f, 1.0f);
   public Color BotLayerReleasedColor = new Color(0.0f, 0.25f, 0.25f, 0.5f);
   public Color DotsOnColor = new Color(0.0f, 1.0f, 1.0f, 1.0f);
   public Color DotsOffColor = new Color(0.0f, 0.25f, 0.25f, 0.5f);
-	
+
   private List<GameObject> dots = new List<GameObject>();
 
   protected override void sliderPressed()
@@ -79,20 +79,20 @@ public class SliderDemo : SliderBase
   private void UpdateGraphics()
   {
     float handleFraction = GetHandleFraction();
-    Vector3 topPosition = transform.localPosition;
-    topPosition.x = 0f;
-    topPosition.y = 0f;
-    topPosition.z -= (1.0f - handleFraction) * 0.25f;
-    topPosition.z = Mathf.Min(topPosition.z, -0.003f); // -0.003 is so midLayer will never intersect with top or bot layer
-    topLayer.transform.localPosition = topPosition;
+    //Vector3 topPosition = transform.localPosition;
+    //topPosition.x = 0f;
+    //topPosition.y = 0f;
+    //topPosition.z -= (1.0f - handleFraction) * 0.25f;
+    //topPosition.z = Mathf.Min(topPosition.z, -0.003f); // -0.003 is so midLayer will never intersect with top or bot layer
+    //topLayer.transform.localPosition = topPosition;
 
-    Vector3 botPosition = transform.localPosition;
-    botPosition.x = 0f;
-    topPosition.y = 0f;
-    botPosition.z = -0.001f;
-    botLayer.transform.localPosition = botPosition;
+    //Vector3 botPosition = transform.localPosition;
+    //botPosition.x = 0f;
+    //topPosition.y = 0f;
+    //botPosition.z = -0.001f;
+    //botLayer.transform.localPosition = botPosition;
 
-    midLayer.transform.localPosition = (topPosition + botPosition) / 2.0f;
+    //midLayer.transform.localPosition = (topPosition + botPosition) / 2.0f;
 
     if (activeBar)
     {
@@ -183,7 +183,7 @@ public class SliderDemo : SliderBase
         new_dot.transform.parent = transform;
         new_dot.transform.localPosition = new Vector3(x, 1.0f, m_localTriggerDistance);
         new_dot.transform.localRotation = dot.transform.localRotation;
-        new_dot.transform.localScale = Vector3.one;
+        new_dot.transform.localScale = 2 * Vector3.one;
         new_dot.transform.parent = transform.parent;
         dots.Add(new_dot);
       }
