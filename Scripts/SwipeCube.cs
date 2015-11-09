@@ -4,7 +4,7 @@ using Leap;
 
 public class SwipeCube : MonoBehaviour {
 
-    public Controller hc;
+    public static Controller hc;
     public static bool checkSwipe = true;
     private float time = 0;
     private float wait = 0;
@@ -22,7 +22,7 @@ public class SwipeCube : MonoBehaviour {
     {
         hc = new Controller();
         hc.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
-        hc.Config.SetFloat("Gesture.Swipe.MinLength", 150.0f);
+        hc.Config.SetFloat("Gesture.Swipe.MinLength", 200.0f);
         hc.Config.SetFloat("Gesture.Swipe.MinVelocity", 300f);
         hc.Config.Save();
         cur = hc.Frame();
@@ -67,9 +67,10 @@ public class SwipeCube : MonoBehaviour {
           dif--;
         }
           wait = 15;
+          PalmRotator.canRotate = false;
         }
 
-			if (time < 90 && wait > 0)
+			if (time < 90 && wait > 0 && checkSwipe)
       {
         //Debug.Log("Choosing what direction.");
         if (lr != null && ud == null)
@@ -106,10 +107,12 @@ public class SwipeCube : MonoBehaviour {
         if (lr != null && ud == null)
         {
           lr = null;
+          PalmRotator.canRotate = true;
         }
         else if (lr == null && ud != null)
         {
           ud = null;
+          PalmRotator.canRotate = true;
         }
         wait--;
       }

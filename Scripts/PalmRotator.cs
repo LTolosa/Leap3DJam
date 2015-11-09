@@ -1,120 +1,141 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Leap;
 
 public class PalmRotator : MonoBehaviour {
 
     public static string currentRotating = "";
 
 	public GrabDetector grabSide;
+    public SwipeCube swipe;
 	public bool rotateX;
 
     private RigidHand hand;
+    private float startTime;
 	private Vector3 startAngle;
 	private Vector3 sideStartAngle;
     private Vector3 previousAngle;
     private Vector3 nextAngle;
+    private int handId;
     private float interTime = 0.0f;
 
 	private string HAND_NAME = "RigidRoundHand(Clone)";
-	private bool canRotate = true;
+	public static bool canRotate = true;
     private bool interp = false;
-    private bool removeCubes = false;
+    private const float TIME_DIF = 1f;
 	// Use this for initialization
 	void Start () {
-
 	}
 
 	// Update is called once per frame
 	void Update () {
-        if (hand == null)
-            StartInterp();
-        if (hand != null)
-            Debug.Log(hand.GetPalmRotation().eulerAngles);
-		if(currentRotating == this.name){
-            if (canRotate) {
-                removeCubes = false;
-                Debug.Log("In rotating" + Time.time);
-                Vector3 euler = sideStartAngle + 3 * (hand.GetPalmRotation().eulerAngles - startAngle);
-                euler = rotateX ? new Vector3(euler.x, 0, 0) : new Vector3(0, euler.y, 0);
-                float dif = rotateX ? euler.x - grabSide.transform.eulerAngles.x : euler.y - grabSide.transform.eulerAngles.y;
-                previousAngle = grabSide.transform.eulerAngles;
-                grabSide.transform.rotation = Quaternion.Euler(euler);
-                float curDegreeChange = rotateX ? euler.x - sideStartAngle.x : euler.y - sideStartAngle.y;
-
-                if (Mathf.Abs(curDegreeChange) > 45 && Mathf.Sign(curDegreeChange) == Mathf.Sign(dif)) {
+        if(currentRotating == this.name){
+            if (canRotate && startTime + TIME_DIF < Time.time ) {
+                float startDegree = rotateX ? startAngle.x : startAngle.y;
+                float curDegree = rotateX ? hand.GetPalmRotation().eulerAngles.x : hand.GetPalmRotation().eulerAngles.y;
+                float dir = Mathf.Sign(curDegree - startDegree);
+                if(Mathf.Abs(curDegree - startDegree) > 30) {
+                    swipe.enabled = false;
+                    grabSide.AddCubes();
+                    previousAngle = rotateX ? new Vector3(sideStartAngle.x, 0, 0) : new Vector3(0, sideStartAngle.y, 0);
+                    nextAngle = rotateX ? new Vector3(sideStartAngle.x + 90 * dir, 0, 0) : new Vector3(0, sideStartAngle.y + 90 * dir, 0);
+                    interp = true;
                     canRotate = false;
-                    nextAngle = rotateX ? new Vector3(sideStartAngle.x + Mathf.Sign(curDegreeChange) * 90, 0, 0)
-                                        : new Vector3(0, sideStartAngle.y + Mathf.Sign(curDegreeChange) * 90, 0);
                     interTime = 0.0f;
                 }
-
             }
-		}
+
+            Frame frame = SwipeCube.hc.Frame();
+            bool found = false;
+            for (int h = 0; h < frame.Hands.Count; h++)
+            {
+                if (frame.Hands[h].Id == handId)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                if (!interp)
+                {
+                    grabSide.RemoveCubes();
+                    //swipe.enabled = true;
+                }
+                canRotate = false;
+                hand = null;
+                currentRotating = "";
+            }
+        }
 
         if (interp) {
-            SwipeCube.checkSwipe = false;
             if (interTime <= 1.0f)
             {
-                Vector3 euler = Vector3.Lerp(previousAngle, nextAngle, interTime);
-                grabSide.transform.rotation = Quaternion.Euler(euler);
-                interTime += Time.deltaTime;
+                grabSide.transform.rotation = Quaternion.Euler(Vector3.Lerp(previousAngle, nextAngle, interTime));
+                interTime += (interTime > 0.5f ? 1 : 2.5f)*Time.deltaTime;
             }
             else
             {
                 interp = false;
-                if (removeCubes) {
+                swipe.enabled = true;
+                Vector3 snap = new Vector3(Mathf.Round(nextAngle.x / 90f) * 90, Mathf.Round(nextAngle.y / 90f) * 90, 0);
+                grabSide.transform.rotation = Quaternion.Euler(snap);
+                grabSide.RemoveCubes();
+                /*****
+                CLEAN   
+                */
+                if (hand == null) {
                     grabSide.RemoveCubes();
-                    removeCubes = false;
-                    SwipeCube.checkSwipe = true;
-                    hand = null;
-                    currentRotating = "";
-
-                }
-                else {
+                    //swipe.enabled = true;
+                } else { 
                     startAngle = hand.GetPalmRotation().eulerAngles;
                     sideStartAngle = grabSide.transform.eulerAngles;
                     canRotate = true;
-
+                    startTime = Time.time;
                 }
+                
             }
         }
+
 	}
 
 	void OnTriggerEnter(Collider other){
-		//Debug.Log(other.transform.root.name);
-		if(other.transform.root.name == HAND_NAME && hand == null && currentRotating == ""){
+		if(other.transform.root.name == HAND_NAME && hand == null && currentRotating == "" && other.CompareTag("Palm")){
+            Debug.Log("Started");
 			hand = other.transform.root.GetComponent<RigidHand>();
+            handId = hand.GetLeapHand().Id;
 			startAngle = hand.GetPalmRotation().eulerAngles;
 			sideStartAngle = grabSide.transform.eulerAngles;
-			grabSide.AddCubes();
 			canRotate = true;
-            SwipeCube.checkSwipe = false;
+            //swipe.enabled = false;
             PalmRotator.currentRotating = name;
+            startTime = Time.time;
 		}
 	}
 
     void OnTriggerStay(Collider other)
     {
-        if (hand != null && currentRotating == this.name && !interp) {
+        if (hand != null && currentRotating == this.name && !interp && other.CompareTag("Palm")) {
             canRotate = true;
-            grabSide.AddCubes();
+            //grabSide.AddCubes();
         }
     }
 
 	void OnTriggerExit(Collider other){
-		if(hand != null && other.transform.root.GetComponent<RigidHand>() == hand){
-            removeCubes = true;
-            StartInterp();
+		if(hand != null && other.transform.root.GetComponent<RigidHand>() == hand && other.CompareTag("Palm")){
+            Debug.Log("You left");
+            if (!interp){
+                grabSide.RemoveCubes();
+                //swipe.enabled = true;
+            }
+            canRotate = false;
+            hand = null;
+            currentRotating = "";
 		}
 	}
 
-    void StartInterp()
-    {
-        removeCubes = true;
-        interp = true;
-        interTime = 0.0f;
-        previousAngle = grabSide.transform.eulerAngles;
-        float ang = rotateX ? Mathf.Round(previousAngle.x / 90.0f) * 90 : Mathf.Round(previousAngle.y / 90.0f) * 90;
-        nextAngle = rotateX ? new Vector3(ang, 0, 0) : new Vector3(0, ang, 0);
-    }
+
+
+ 
 }
