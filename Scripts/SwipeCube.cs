@@ -26,6 +26,10 @@ public class SwipeCube : MonoBehaviour {
         hc.Config.SetFloat("Gesture.Swipe.MinVelocity", 300f);
         hc.Config.Save();
         cur = hc.Frame();
+
+        /**************************************************************
+        */
+        PlayerPrefs.SetInt("Difficulty", 1);
     }
 
     // Update is called once per frame
@@ -108,11 +112,15 @@ public class SwipeCube : MonoBehaviour {
         {
           lr = null;
           PalmRotator.canRotate = true;
+          if(PlayerPrefs.GetInt("Difficulty") == 1)
+            PalmRotator.textRef.text = "Moves: " + (++PalmRotator.moveCount);
         }
         else if (lr == null && ud != null)
         {
           ud = null;
           PalmRotator.canRotate = true;
+          if(PlayerPrefs.GetInt("Difficulty") == 1)
+            PalmRotator.textRef.text = "Moves: " + (++PalmRotator.moveCount);
         }
         wait--;
       }

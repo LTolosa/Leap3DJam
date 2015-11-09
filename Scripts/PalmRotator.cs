@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using Leap;
 
@@ -6,10 +7,15 @@ public class PalmRotator : MonoBehaviour {
 
     public static string currentRotating = "";
     public static bool scrambling = false;
+    public static int moveCount = 0;
+    public static Text textRef;
 
-	public GrabDetector grabSide;
+
+    public GrabDetector grabSide;
     public SwipeCube swipe;
-	public bool rotateX;
+    public Text moveText;
+    public bool rotateX;
+
 
     private RigidHand hand;
     private float startTime;
@@ -26,6 +32,10 @@ public class PalmRotator : MonoBehaviour {
     private const float TIME_DIF = 1f;
 	// Use this for initialization
 	void Start () {
+        if(moveText != null)
+        {
+            textRef = moveText;
+        }
 	}
 
 	// Update is called once per frame
@@ -43,6 +53,7 @@ public class PalmRotator : MonoBehaviour {
                     interp = true;
                     canRotate = false;
                     interTime = 0.0f;
+                    textRef.text = "Moves: " + (++moveCount);
                 }
             }
 
