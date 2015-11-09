@@ -18,11 +18,13 @@ public class ButtonDemo : ButtonBase
   protected override void buttonPressed()
   {
     TurnsOnGraphics();
+    base.FireButtonStart();
   }
   
   protected override void buttonReleased()
   {
     TurnsOffGraphics();
+    base.FireButtonEnd();
   }
   
   private void TurnsOnGraphics()

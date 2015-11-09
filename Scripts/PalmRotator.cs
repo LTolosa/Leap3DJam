@@ -5,6 +5,7 @@ using Leap;
 public class PalmRotator : MonoBehaviour {
 
     public static string currentRotating = "";
+    public static bool scrambling = false;
 
 	public GrabDetector grabSide;
     public SwipeCube swipe;
@@ -29,7 +30,7 @@ public class PalmRotator : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        if(currentRotating == this.name){
+        if(currentRotating == this.name && !scrambling){
             if (canRotate && startTime + TIME_DIF < Time.time ) {
                 float startDegree = rotateX ? startAngle.x : startAngle.y;
                 float curDegree = rotateX ? hand.GetPalmRotation().eulerAngles.x : hand.GetPalmRotation().eulerAngles.y;
@@ -101,8 +102,7 @@ public class PalmRotator : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other){
-		if(other.transform.root.name == HAND_NAME && hand == null && currentRotating == "" && other.CompareTag("Palm")){
-            Debug.Log("Started");
+		if(other.transform.root.name == HAND_NAME && hand == null && currentRotating == "" && other.CompareTag("Palm") && !scrambling){
 			hand = other.transform.root.GetComponent<RigidHand>();
             handId = hand.GetLeapHand().Id;
 			startAngle = hand.GetPalmRotation().eulerAngles;
@@ -124,7 +124,6 @@ public class PalmRotator : MonoBehaviour {
 
 	void OnTriggerExit(Collider other){
 		if(hand != null && other.transform.root.GetComponent<RigidHand>() == hand && other.CompareTag("Palm")){
-            Debug.Log("You left");
             if (!interp){
                 grabSide.RemoveCubes();
                 //swipe.enabled = true;
