@@ -83,6 +83,7 @@ public class PalmRotator : MonoBehaviour {
                 //currentHands.Remove(name);
                 hand = null;
                 currentRotating = "";
+                grabSide.transform.FindChild("Cube").gameObject.SetActive(false);
             }
         }
 
@@ -103,20 +104,20 @@ public class PalmRotator : MonoBehaviour {
                 nowRotating = false;
                 Vector3 snap = new Vector3(Mathf.Round(nextAngle.x / 90f) * 90, Mathf.Round(nextAngle.y / 90f) * 90, 0);
                 grabSide.transform.rotation = Quaternion.Euler(snap);
-                
+
                 /*****
-                CLEAN   
+                CLEAN
                 */
                 if (hand == null) {
                     grabSide.RemoveCubes();
                     //swipe.enabled = true;
-                } else { 
+                } else {
                     startAngle = hand.GetPalmRotation().eulerAngles;
                     sideStartAngle = grabSide.transform.eulerAngles;
                     canRotate = true;
                     startTime = Time.time;
                 }
-                
+
             }
         }
 
@@ -137,6 +138,7 @@ public class PalmRotator : MonoBehaviour {
             //swipe.enabled = false;
             //PalmRotator.currentRotating = name;
             startTime = Time.time;
+            grabSide.transform.FindChild("Cube").gameObject.SetActive(true);
 		}
 	}
 
@@ -157,10 +159,11 @@ public class PalmRotator : MonoBehaviour {
             //canRotate = false;
             hand = null;
             currentRotating = "";
+            grabSide.transform.FindChild("Cube").gameObject.SetActive(false);
 		}
 	}
 
 
 
- 
+
 }

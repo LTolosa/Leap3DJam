@@ -16,14 +16,15 @@ public class SwipeCube : MonoBehaviour {
 		private float max_dir;
     private Frame last;
     private Frame cur;
+    public AudioClip tada;
 
     // Use this for initialization
     void Start()
     {
         hc = new Controller();
         hc.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
-        hc.Config.SetFloat("Gesture.Swipe.MinLength", 200.0f);
-        hc.Config.SetFloat("Gesture.Swipe.MinVelocity", 300f);
+        hc.Config.SetFloat("Gesture.Swipe.MinLength", 150.0f);
+        hc.Config.SetFloat("Gesture.Swipe.MinVelocity", 250f);
         hc.Config.Save();
         cur = hc.Frame();
 
@@ -101,8 +102,11 @@ public class SwipeCube : MonoBehaviour {
             this.transform.position, Vector3.right, -10);
           }
         }
-        if(time == 20)
-                GetComponent<AudioSource>().Play();
+            if (time == 20)
+            {
+                if (GetComponent<AudioSource>().clip != tada)
+                    GetComponent<AudioSource>().Play();
+            }
             time += 10;
       }
 			else if (time == 90)

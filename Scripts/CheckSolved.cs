@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class CheckSolved : MonoBehaviour {
     public static bool firstScrambled = false;
     public AudioClip tada;
     private Cube[] cubes;
+    private bool finished = false;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         cubes = GetComponentsInChildren<Cube>();
 	}
 
@@ -55,15 +57,21 @@ public class CheckSolved : MonoBehaviour {
                     break;
             }
 
-            if(solved && firstScrambled)
+            if(solved && !finished && firstScrambled)
             {
-                GetComponent<AudioSource>().clip = tada;
-                GetComponent<AudioSource>().Play();
-                PlayerPrefs.SetInt("CurScore", PalmRotator.moveCount);
-                Application.LoadLevel(2);
+                StartCoroutine(End());
             }
 
         }
 
+    }
+
+    IEnumerator End(){
+      finished = true;
+      GetComponent<AudioSource>().clip = tada;
+      GetComponent<AudioSource>().Play();
+        yield return new WaitForSeconds(2.063f);
+        PlayerPrefs.SetInt("CurScore", PalmRotator.moveCount);
+      Application.LoadLevel(2);
     }
 }
