@@ -11,8 +11,9 @@ public class Scramble : MonoBehaviour {
     private System.Random rnd = new System.Random();
     private bool busy = false;
 	// Use this for initialization
-	void Start () {
+	IEnumerator Start () {
         scrambler.StartHandler += OnScramble;
+        yield return new WaitForSeconds(Time.deltaTime);
         busy = true;
         StartCoroutine(ScrambleCube());
     }

@@ -57,6 +57,7 @@ public class CheckSolved : MonoBehaviour {
             if(solved && firstScrambled)
             {
                 GetComponent<AudioSource>().Play();
+                PlayerPrefs.SetInt("CurScore", PalmRotator.moveCount);
                 Application.LoadLevel(2);
             }
 
