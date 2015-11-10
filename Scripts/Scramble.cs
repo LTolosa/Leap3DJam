@@ -25,6 +25,8 @@ public class Scramble : MonoBehaviour {
 
     void OnScramble(object sender, LMWidgets.EventArg<bool> arg) {
         GetComponent<AudioSource>().Play();
+        PalmRotator.moveCount = 0;
+        PalmRotator.textRef.text = "Moves: " + PalmRotator.moveCount;
         if (arg.CurrentValue && (SwipeCube.checkSwipe || !PalmRotator.canRotate) && !busy)
         {
             busy = true;
@@ -41,16 +43,16 @@ public class Scramble : MonoBehaviour {
             int index = rnd.Next(0, 6);
             Transform face = faces[index];
 
-            for(int j = 0; j < 9; j++)
+            for(int j = 0; j < 3; j++)
             {
                 face.GetComponent<GrabDetector>().RemoveCubes();
                 face.GetComponent<GrabDetector>().AddCubes();
                 if(index < 2)
-                    face.RotateAround(face.position, Vector3.right, 10);
+                    face.RotateAround(face.position, Vector3.right, 30);
                 else if(index < 4)
-                    face.RotateAround(face.position, Vector3.up, 10);
+                    face.RotateAround(face.position, Vector3.up, 30);
                 else if(index < 6)
-                    face.RotateAround(face.position, Vector3.forward, 10);
+                    face.RotateAround(face.position, Vector3.forward, 30);
                 yield return new WaitForSeconds(Time.deltaTime);
             }
             face.GetComponent<GrabDetector>().RemoveCubes();

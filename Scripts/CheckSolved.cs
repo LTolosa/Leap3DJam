@@ -3,13 +3,14 @@ using System.Collections.Generic;
 
 public class CheckSolved : MonoBehaviour {
     public static bool firstScrambled = false;
+    public AudioClip tada;
     private Cube[] cubes;
 
 	// Use this for initialization
 	void Start () {
         cubes = GetComponentsInChildren<Cube>();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
         if(!PalmRotator.scrambling)
@@ -56,6 +57,7 @@ public class CheckSolved : MonoBehaviour {
 
             if(solved && firstScrambled)
             {
+                GetComponent<AudioSource>().clip = tada;
                 GetComponent<AudioSource>().Play();
                 PlayerPrefs.SetInt("CurScore", PalmRotator.moveCount);
                 Application.LoadLevel(2);
