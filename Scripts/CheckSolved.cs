@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 public class CheckSolved : MonoBehaviour {
-
+    public static bool firstScrambled = false;
     private Cube[] cubes;
 
 	// Use this for initialization
@@ -54,7 +54,11 @@ public class CheckSolved : MonoBehaviour {
                     break;
             }
 
-            //print(solved);
+            if(solved && firstScrambled)
+            {
+                GetComponent<AudioSource>().Play();
+                Application.LoadLevel(2);
+            }
 
         }
 

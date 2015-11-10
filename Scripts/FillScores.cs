@@ -8,10 +8,7 @@ public class FillScores : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        PlayerPrefs.SetInt("Score1", 10);
-        PlayerPrefs.SetInt("Score2", 20);
-        PlayerPrefs.SetInt("Score3", 30);
-        PlayerPrefs.SetInt("CureScore", 40);
+
         int[] scores = new int[5];
         int numOfScores = 0;
         if (PlayerPrefs.HasKey("Score1"))
@@ -42,43 +39,59 @@ public class FillScores : MonoBehaviour {
 
         int curScore = PlayerPrefs.GetInt("CurScore");
         int indexInTop = -1;
-        if(numOfScores < 5)
-        {
-            indexInTop = numOfScores
-        }
-        for(int i = 0; i < numOfScores; i++)
+        for (int i = 0; i < numOfScores; i++)
         {
             if (scores[i] > curScore)
+            {
                 indexInTop = i;
+                break;
+            }
         }
+        if(indexInTop == -1 && numOfScores < 5)
+            indexInTop = numOfScores;
+            
 
-        if(indexInTop != -1)
+        if (indexInTop != -1)
         {
             numOfScores++;
             if (numOfScores > 5) numOfScores = 5;
         }
-
+        print(numOfScores);
         for(int i = 0; i < 5; i++)
         {
-            if(indexInTop != -1 && i == indexInTop)
-            {
-                positions[indexInTop].text = i + ": " + curScore;
-                positions[indexInTop].color = new Color(1, 1, 0);
-            }
-            if(i >= numOfScores)
+
+            if (i >= numOfScores)
             {
                 positions[i].enabled = false;
-            }
-            else if(indexInTop != -1 && i > indexInTop)
-            {
-                positions[i].text = i + ": " + scores[i - 1];
+                PlayerPrefs.DeleteKey("Score" + (i+1));
             }
             else
             {
-                positions[i].text = i + ": " + scores[i];
+                if (indexInTop != -1)
+                {
+                    if (i == indexInTop)
+                    {
+                        positions[indexInTop].text = (i + 1) + ": " + curScore;
+                        positions[indexInTop].color = new Color(1, 1, 0);
+                        PlayerPrefs.SetInt("Score" + (i+1), curScore);
+                    }
+                    else if (i > indexInTop)
+                    {
+                        PlayerPrefs.SetInt("Score" + (i+1), scores[i - 1]);
+                        positions[i].text = (i + 1) + ": " + scores[i - 1];
+                    }
+                    else
+                    {
+                        PlayerPrefs.SetInt("Score" + (i+1), scores[i]);
+                        positions[i].text = (i + 1) + ": " + scores[i];
+                    }
+                }
+                else { 
+                    positions[i].text = (i + 1) + ": " + scores[i];
+                    PlayerPrefs.SetInt("Score" + (i + 1), scores[i]);
+                }
             }
         }
-
     }
 	
 	// Update is called once per frame

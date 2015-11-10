@@ -13,7 +13,9 @@ public class Scramble : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         scrambler.StartHandler += OnScramble;
-	}
+        busy = true;
+        StartCoroutine(ScrambleCube());
+    }
 
 	// Update is called once per frame
 	void Update () {
@@ -58,5 +60,6 @@ public class Scramble : MonoBehaviour {
         PalmRotator.scrambling = false;
         PalmRotator.canRotate = true;
         busy = false;
+        CheckSolved.firstScrambled = true;
     }
 }
