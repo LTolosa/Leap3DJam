@@ -87,11 +87,13 @@ public class PalmRotator : MonoBehaviour {
         }
 
         if (interp) {
-            if (interTime <= 1.0f)
+            if (interTime < 9.0f)
             {
                 grabSide.AddCubes();
-                grabSide.transform.rotation = Quaternion.Euler(Vector3.Lerp(previousAngle, nextAngle, interTime));
-                interTime += (interTime > 0.5f ? 1 : 2.5f)*Time.deltaTime;
+                //grabSide.transform.rotation = Quaternion.Euler(Vector3.Lerp(previousAngle, nextAngle, interTime));
+                //interTime += (interTime > 0.5f ? 1 : 2.5f)*Time.deltaTime;
+                grabSide.transform.RotateAround(transform.position, rotateX ? Vector3.right : Vector3.up, 10);
+                interTime += 1;
             }
             else
             {
