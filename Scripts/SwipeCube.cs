@@ -27,9 +27,6 @@ public class SwipeCube : MonoBehaviour {
         hc.Config.Save();
         cur = hc.Frame();
 
-        /**************************************************************
-        */
-        PlayerPrefs.SetInt("Difficulty", 1);
     }
 
     // Update is called once per frame
@@ -71,6 +68,7 @@ public class SwipeCube : MonoBehaviour {
           dif--;
         }
           wait = 15;
+
           //PalmRotator.canRotate = false;
         }
 
@@ -103,7 +101,9 @@ public class SwipeCube : MonoBehaviour {
             this.transform.position, Vector3.right, -10);
           }
         }
-        time += 10;
+        if(time == 20)
+                GetComponent<AudioSource>().Play();
+            time += 10;
       }
 			else if (time == 90)
       {

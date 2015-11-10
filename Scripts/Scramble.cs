@@ -21,6 +21,7 @@ public class Scramble : MonoBehaviour {
 	}
 
     void OnScramble(object sender, LMWidgets.EventArg<bool> arg) {
+        GetComponent<AudioSource>().Play();
         if (arg.CurrentValue && (SwipeCube.checkSwipe || !PalmRotator.canRotate) && !busy)
         {
             busy = true;

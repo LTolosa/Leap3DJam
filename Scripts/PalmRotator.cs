@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Leap;
 
 public class PalmRotator : MonoBehaviour {
-
+    public static List<RigidHand> hands;
     public static bool nowRotating = false;
     public static string currentRotating = "";
     public static bool scrambling = false;
@@ -33,6 +33,7 @@ public class PalmRotator : MonoBehaviour {
     private const float TIME_DIF = 1f;
 	// Use this for initialization
 	void Start () {
+        hands = new List<RigidHand>();
         if(moveText != null)
         {
             textRef = moveText;
@@ -42,11 +43,11 @@ public class PalmRotator : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if(!scrambling && hand != null){
-            if (canRotate && startTime + TIME_DIF < Time.time ) {
+            if (canRotate && startTime + TIME_DIF < Time.time && !nowRotating ) {
                 float startDegree = rotateX ? startAngle.x : startAngle.y;
                 float curDegree = rotateX ? hand.GetPalmRotation().eulerAngles.x : hand.GetPalmRotation().eulerAngles.y;
                 float dir = Mathf.Sign(curDegree - startDegree);
-                if(Mathf.Abs(curDegree - startDegree) > 30 && !nowRotating) {
+                if(Mathf.Abs(curDegree - startDegree) > 30) {
                     swipe.enabled = false;
                     nowRotating = true;
                     grabSide.AddCubes();
@@ -56,6 +57,7 @@ public class PalmRotator : MonoBehaviour {
                     canRotate = false;
                     interTime = 0.0f;
                     textRef.text = "Moves: " + (++moveCount);
+                    GetComponent<AudioSource>().Play();
                 }
             }
 
@@ -87,17 +89,19 @@ public class PalmRotator : MonoBehaviour {
         if (interp) {
             if (interTime <= 1.0f)
             {
+                grabSide.AddCubes();
                 grabSide.transform.rotation = Quaternion.Euler(Vector3.Lerp(previousAngle, nextAngle, interTime));
                 interTime += (interTime > 0.5f ? 1 : 2.5f)*Time.deltaTime;
             }
             else
             {
+                grabSide.RemoveCubes();
                 interp = false;
                 swipe.enabled = true;
                 nowRotating = false;
                 Vector3 snap = new Vector3(Mathf.Round(nextAngle.x / 90f) * 90, Mathf.Round(nextAngle.y / 90f) * 90, 0);
                 grabSide.transform.rotation = Quaternion.Euler(snap);
-                grabSide.RemoveCubes();
+                
                 /*****
                 CLEAN   
                 */
@@ -119,6 +123,11 @@ public class PalmRotator : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
 		if(other.transform.root.name == HAND_NAME && hand == null && /*currentRotating == "" &&*/ other.CompareTag("Palm") && !scrambling){
 			hand = other.transform.root.GetComponent<RigidHand>();
+            if (hands.Contains(hand))
+            {
+                hand = null;
+                return;
+            }
             handId = hand.GetLeapHand().Id;
 			startAngle = hand.GetPalmRotation().eulerAngles;
 			sideStartAngle = grabSide.transform.eulerAngles;

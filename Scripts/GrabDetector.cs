@@ -22,8 +22,14 @@ public class GrabDetector : MonoBehaviour {
 
 	public void AddCubes(){
 		foreach(GameObject cube in CubeLists){
-            if(cube.CompareTag("Cube"))
+            if (cube.CompareTag("Cube")) { 
+                if(cube.transform.parent != RubiksCube.transform && cube.transform.parent != this.gameObject.transform) {
+                    RemoveCubes();
+                    break;
+                }
+
     	        cube.transform.parent = this.gameObject.transform;
+            }
         }
 	}
 
