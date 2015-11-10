@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System.Collections.Generic;
 using Leap;
 
 public class PalmRotator : MonoBehaviour {
 
+    public static bool nowRotating = false;
     public static string currentRotating = "";
     public static bool scrambling = false;
     public static int moveCount = 0;
@@ -40,13 +41,14 @@ public class PalmRotator : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        if(currentRotating == this.name && !scrambling){
+        if(!scrambling && hand != null){
             if (canRotate && startTime + TIME_DIF < Time.time ) {
                 float startDegree = rotateX ? startAngle.x : startAngle.y;
                 float curDegree = rotateX ? hand.GetPalmRotation().eulerAngles.x : hand.GetPalmRotation().eulerAngles.y;
                 float dir = Mathf.Sign(curDegree - startDegree);
-                if(Mathf.Abs(curDegree - startDegree) > 30) {
+                if(Mathf.Abs(curDegree - startDegree) > 30 && !nowRotating) {
                     swipe.enabled = false;
+                    nowRotating = true;
                     grabSide.AddCubes();
                     previousAngle = rotateX ? new Vector3(sideStartAngle.x, 0, 0) : new Vector3(0, sideStartAngle.y, 0);
                     nextAngle = rotateX ? new Vector3(sideStartAngle.x + 90 * dir, 0, 0) : new Vector3(0, sideStartAngle.y + 90 * dir, 0);
@@ -68,14 +70,15 @@ public class PalmRotator : MonoBehaviour {
                 }
             }
 
-            if (!found)
+            if (!found && hand != null)
             {
                 if (!interp)
                 {
                     grabSide.RemoveCubes();
                     //swipe.enabled = true;
                 }
-                canRotate = false;
+                //  canRotate = false;
+                //currentHands.Remove(name);
                 hand = null;
                 currentRotating = "";
             }
@@ -91,6 +94,7 @@ public class PalmRotator : MonoBehaviour {
             {
                 interp = false;
                 swipe.enabled = true;
+                nowRotating = false;
                 Vector3 snap = new Vector3(Mathf.Round(nextAngle.x / 90f) * 90, Mathf.Round(nextAngle.y / 90f) * 90, 0);
                 grabSide.transform.rotation = Quaternion.Euler(snap);
                 grabSide.RemoveCubes();
@@ -113,14 +117,14 @@ public class PalmRotator : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other){
-		if(other.transform.root.name == HAND_NAME && hand == null && currentRotating == "" && other.CompareTag("Palm") && !scrambling){
+		if(other.transform.root.name == HAND_NAME && hand == null && /*currentRotating == "" &&*/ other.CompareTag("Palm") && !scrambling){
 			hand = other.transform.root.GetComponent<RigidHand>();
             handId = hand.GetLeapHand().Id;
 			startAngle = hand.GetPalmRotation().eulerAngles;
 			sideStartAngle = grabSide.transform.eulerAngles;
 			canRotate = true;
             //swipe.enabled = false;
-            PalmRotator.currentRotating = name;
+            //PalmRotator.currentRotating = name;
             startTime = Time.time;
 		}
 	}
@@ -128,7 +132,7 @@ public class PalmRotator : MonoBehaviour {
     void OnTriggerStay(Collider other)
     {
         if (hand != null && currentRotating == this.name && !interp && other.CompareTag("Palm")) {
-            canRotate = true;
+            //canRotate = true;
             //grabSide.AddCubes();
         }
     }
@@ -139,7 +143,7 @@ public class PalmRotator : MonoBehaviour {
                 grabSide.RemoveCubes();
                 //swipe.enabled = true;
             }
-            canRotate = false;
+            //canRotate = false;
             hand = null;
             currentRotating = "";
 		}

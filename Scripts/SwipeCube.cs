@@ -71,7 +71,7 @@ public class SwipeCube : MonoBehaviour {
           dif--;
         }
           wait = 15;
-          PalmRotator.canRotate = false;
+          //PalmRotator.canRotate = false;
         }
 
 			if (time < 90 && wait > 0 && checkSwipe)
