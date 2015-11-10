@@ -20,8 +20,11 @@ public class Scramble : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
-	}
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
 
     void OnScramble(object sender, LMWidgets.EventArg<bool> arg) {
         GetComponent<AudioSource>().Play();

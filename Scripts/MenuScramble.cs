@@ -12,7 +12,10 @@ public class MenuScramble : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
 	}
 
 	IEnumerator ScrambleCube() {
@@ -32,7 +35,7 @@ public class MenuScramble : MonoBehaviour {
 									face.RotateAround(face.position, face.up, 18);
 							else if(index < 6)
 									face.RotateAround(face.position, face.forward, 18);
-							yield return new WaitForSeconds(Time.deltaTime);
+							yield return new WaitForSeconds(Time.deltaTime*2);
 					}
 					face.GetComponent<GrabDetector>().RemoveCubes();
 
