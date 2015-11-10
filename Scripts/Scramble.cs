@@ -6,7 +6,6 @@ public class Scramble : MonoBehaviour {
 
     public ButtonDemo scrambler;
     public int moves = 20;
-    public bool menu = false;
     public Transform[] faces = new Transform[6];
 
     private System.Random rnd = new System.Random();
@@ -15,10 +14,10 @@ public class Scramble : MonoBehaviour {
 	void Start () {
         scrambler.StartHandler += OnScramble;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-	    
+
 	}
 
     void OnScramble(object sender, LMWidgets.EventArg<bool> arg) {
@@ -33,11 +32,11 @@ public class Scramble : MonoBehaviour {
         SwipeCube.checkSwipe = false;
         PalmRotator.scrambling = true;
         PalmRotator.canRotate = false;
-        for (int i = 0; i < moves || menu; i++)
+        for (int i = 0; i < moves; i++)
         {
             int index = rnd.Next(0, 6);
             Transform face = faces[index];
-            
+
             for(int j = 0; j < 9; j++)
             {
                 face.GetComponent<GrabDetector>().RemoveCubes();

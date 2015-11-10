@@ -2,31 +2,31 @@
 using System.Collections;
 using LMWidgets;
 
-public class ButtonDemo : ButtonBase 
+public class ButtonDemo : ButtonBase
 {
   public ButtonDemoGraphics onGraphics;
   public ButtonDemoGraphics offGraphics;
   public ButtonDemoGraphics midGraphics;
   public ButtonDemoGraphics botGraphics;
-  
+
   public Color MidGraphicsOnColor = new Color(0.0f, 0.5f, 0.5f, 1.0f);
   public Color BotGraphicsOnColor = new Color(0.0f, 1.0f, 1.0f, 1.0f);
   public Color MidGraphicsOffColor = new Color(0.0f, 0.5f, 0.5f, 0.1f);
   public Color BotGraphicsOffColor = new Color(0.0f, 0.25f, 0.25f, 1.0f);
-  
-  
+
+
   protected override void buttonPressed()
   {
     TurnsOnGraphics();
     base.FireButtonStart();
   }
-  
+
   protected override void buttonReleased()
   {
     TurnsOffGraphics();
     base.FireButtonEnd();
   }
-  
+
   private void TurnsOnGraphics()
   {
     onGraphics.SetActive(true);
@@ -34,7 +34,7 @@ public class ButtonDemo : ButtonBase
     midGraphics.SetColor(MidGraphicsOnColor);
     botGraphics.SetColor(BotGraphicsOnColor);
   }
-  
+
   private void TurnsOffGraphics()
   {
     onGraphics.SetActive(false);
@@ -42,7 +42,7 @@ public class ButtonDemo : ButtonBase
     midGraphics.SetColor(MidGraphicsOffColor);
     botGraphics.SetColor(BotGraphicsOffColor);
   }
-  
+
   private void UpdateGraphics()
   {
     Vector3 position = transform.localPosition;
@@ -56,12 +56,13 @@ public class ButtonDemo : ButtonBase
     mid_position.z = (position.z + bot_position.z) / 2.0f;
     midGraphics.transform.localPosition = mid_position;
   }
-  
+
   protected override void Start()
   {
     base.Start();
+    TurnsOffGraphics();
   }
-  
+
   protected override void FixedUpdate()
   {
     base.FixedUpdate();
